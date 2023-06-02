@@ -21,41 +21,65 @@ const slides = [
 	}
 ]
 
-const nbSlides = slides.length;
+// Récupérer les éléments du DOM
 const arrowRight = document.querySelector(".arrow_right");
 const arrowLeft = document.querySelector(".arrow_left");
 const bannerImg = document.querySelector(".banner-img");
 const slideTagLine = document.querySelector("#banner > p");
+const dots = banner.querySelector(".dots");
 
-let slideCount = 1
+// Initialisation l'index des slides
+let slideIndex = 0
 
-
+// Fonction pour changer de slide
 function changeSlide (direction){
-	bannerImg.src = slides[slideCount].src;
-	slideTagLine.innerHTML = slides[slideCount].tagLine;
-	
-	console.log(slideCount, slides[slideCount], direction.target)
-
-	if (direction === "left") {
-		
-		if (slideCount <= 0) {
-    	slideCount = slides.length;
-    	}
-		slideCount--;
-	} else {
-
-		slideCount++;
-    	if (slideCount >= slides.length) {
-    	slideCount = 0;
-    	}
+	slideIndex = slideIndex + direction
+	if (slideIndex > slides.length -1){
+		slideIndex = 0
 	}
-}	
+	if (slideIndex < 0){
+		slideIndex = slides.length -1
+	}
+	showSlide ();
+}
 
+// Fonction pour afficher la slide et les bullet points
+function showSlide () {
+	bannerImg.src = slides[slideIndex].src;
+	slideTagLine.innerHTML = slides[slideIndex].tagLine;
+
+	// Mise en place des bullet points
+	dots.innerHTML = "";
+	for (let i = 0; i < slides.length; i++) {
+				
+		const dot = document.createElement("span");
+		dot.classList.add("dot");
+		
+		if (i === slideIndex) {
+			dot.classList.add("dot_selected");
+		}
+			dots.appendChild(dot);
+	}
+}
+
+// Appel de la fonction pour afficher la première slide 
+showSlide ();
+
+// Ajout des écouteurs d'événements pour les flèches
 arrowRight.addEventListener("click", function () {
-  changeSlide("right");
+  changeSlide(+1);
 });
-
 arrowLeft.addEventListener("click", function () {
-  changeSlide("left");
+  changeSlide(-1);
 }); 
 
+// Ajout de l'écouteur d'événement pour les bullet points et changement de slide au clic d'une bullet point
+dots.addEventListener("click", (event) => {
+	if (event.target.classList.contains("dot")) {
+		
+		// Crée un array contenant les bullet points et donne l'index de celui cliqué avec event target
+		const dotIndex = Array.from(dots.children).indexOf(event.target);
+		slideIndex = dotIndex;
+		showSlide();
+	}
+});
